@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>VoiceDock | 日本大学文理学部</title>
+
+  <!-- MP3変換用 -->
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #b7282e;
+      --primary-dark: #8f1e23;
+      --primary-light: #f9e9ea;
+
+      --green: #24864b;
+      --green-dark: #196437;
+
+      --gray-dark: #333333;
+      --gray: #707070;
+      --gray-light: #eeeeee;
+
+      --white: #ffffff;
+      --background: #f7f7f8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans",
+        "Yu Gothic",
+        YuGothic,
+        Meiryo,
+        sans-serif;
+
+      min-height: 100vh;
+
+      background:
+        radial-gradient(
+          circle at top right,
+          #fbeaec 0%,
+          transparent 34%
+        ),
+        linear-gradient(
+          135deg,
+          #f4f4f5,
+          #ffffff
+        );
+
+      color: var(--gray-dark);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 28px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .card {
+      position: relative;
+
+      background: var(--white);
+
+      border-radius: 22px;
+
+      padding: 40px 36px 34px;
+
+      box-shadow:
+        0 24px 60px
+        rgba(0, 0, 0, 0.10);
+
+      border:
+        1px solid
+        rgba(0, 0, 0, 0.05);
+
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+
+      position: absolute;
+
+      top: 0;
+      left: 0;
+
+      height: 7px;
+      width: 100%;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary-dark),
+          var(--primary),
+          #dc5f64
+        );
+    }
+
+    .university {
+      text-align: center;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      color: #666;
+
+      letter-spacing: 0.08em;
+
+      margin-bottom: 19px;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 31px;
+    }
+
+    .brand-icon {
+      width: 67px;
+      height: 67px;
+
+      margin:
+        0 auto
+        13px;
+
+      border-radius: 20px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background:
+        linear-gradient(
+          145deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+
+      color: white;
+
+      font-size: 32px;
+
+      box-shadow:
+        0 10px 25px
+        rgba(183, 40, 46, 0.28);
+    }
+
+    h1 {
+      margin: 0;
+
+      color: #202020;
+
+      font-size: 36px;
+      font-weight: 800;
+
+      letter-spacing: -0.03em;
+    }
+
+    .tagline {
+      margin-top: 6px;
+
+      color: var(--primary);
+
+      font-size: 13px;
+      font-weight: 700;
+
+      letter-spacing: 0.12em;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+
+      margin-bottom: 8px;
+
+      font-size: 14px;
+      font-weight: 700;
+
+      color: #444;
+    }
+
+    select,
+    input[type="text"] {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      border:
+        1px solid
+        #d8d8d8;
+
+      border-radius: 10px;
+
+      background: white;
+
+      color: #333;
+
+      font-size: 16px;
+
+      outline: none;
+
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    }
+
+    select:focus,
+    input[type="text"]:focus {
+      border-color: var(--primary);
+
+      box-shadow:
+        0 0 0 3px
+        rgba(183, 40, 46, 0.10);
+    }
+
+    select:disabled,
+    input:disabled {
+      background: #f3f3f3;
+      color: #888;
+    }
+
+    .button-group {
+      display: flex;
+
+      gap: 11px;
+
+      margin-top: 27px;
+    }
+
+    button {
+      border: none;
+
+      border-radius: 12px;
+
+      padding: 15px 20px;
+
+      font-size: 16px;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.15s,
+        box-shadow 0.15s,
+        filter 0.15s;
+    }
+
+    button:hover:not(:disabled) {
+      transform:
+        translateY(-1px);
+
+      filter:
+        brightness(1.03);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+
+      background: #dedede !important;
+      color: #909090 !important;
+
+      box-shadow: none !important;
+
+      transform: none !important;
+    }
+
+    #recordButton {
+      flex: 1;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--green),
+          var(--green-dark)
+        );
+
+      color: white;
+
+      box-shadow:
+        0 7px 18px
+        rgba(36, 134, 75, 0.20);
+    }
+
+    #stopButton {
+      flex: 1;
+
+      background:
+        #606060;
+
+      color: white;
+    }
+
+    #saveButton {
+      width: 100%;
+
+      margin-top: 12px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary),
+          var(--primary-dark)
+        );
+
+      color: white;
+
+      box-shadow:
+        0 8px 20px
+        rgba(183, 40, 46, 0.24);
+    }
+
+    #status {
+      margin-top: 23px;
+
+      padding: 15px 17px;
+
+      border-radius: 11px;
+
+      background: #f4f4f4;
+
+      border-left:
+        5px solid
+        #999;
+
+      text-align: center;
+
+      font-size: 14px;
+      font-weight: 600;
+
+      line-height: 1.6;
+
+      color: #555;
+    }
+
+    #status.recording {
+      background: #fff4f4;
+
+      border-left-color:
+        var(--primary);
+
+      color:
+        var(--primary-dark);
+
+      animation:
+        recordingPulse
+        1.8s
+        infinite;
+    }
+
+    #status.success {
+      background: #effaf3;
+
+      border-left-color:
+        var(--green);
+
+      color:
+        var(--green-dark);
+    }
+
+    #status.error {
+      background: #fff0f0;
+
+      border-left-color:
+        #d63031;
+
+      color:
+        #a72424;
+    }
+
+    @keyframes recordingPulse {
+      0% {
+        box-shadow:
+          0 0 0 0
+          rgba(183, 40, 46, 0.25);
+      }
+
+      70% {
+        box-shadow:
+          0 0 0 10px
+          rgba(183, 40, 46, 0);
+      }
+
+      100% {
+        box-shadow:
+          0 0 0 0
+          rgba(183, 40, 46, 0);
+      }
+    }
+
+    .timer {
+      text-align: center;
+
+      margin-top: 17px;
+
+      min-height: 26px;
+
+      font-variant-numeric:
+        tabular-nums;
+
+      font-size: 22px;
+      font-weight: 700;
+
+      letter-spacing: 0.05em;
+
+      color: var(--primary);
+
+      visibility: hidden;
+    }
+
+    .timer.active {
+      visibility: visible;
+    }
+
+    #audioPlayback {
+      width: 100%;
+
+      margin-top: 21px;
+    }
+
+    .guide {
+      margin-top: 25px;
+
+      padding: 15px 17px;
+
+      border-radius: 11px;
+
+      background: var(--primary-light);
+
+      color: #654044;
+
+      font-size: 12px;
+
+      line-height: 1.7;
+    }
+
+    .guide strong {
+      color: var(--primary-dark);
+    }
+
+    footer {
+      margin-top: 26px;
+
+      padding-top: 19px;
+
+      border-top:
+        1px solid
+        var(--gray-light);
+
+      text-align: center;
+
+      color: #999;
+
+      font-size: 11px;
+
+      line-height: 1.7;
+    }
+
+    footer strong {
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+
+      body {
+        padding:
+          13px;
+      }
+
+      .card {
+        padding:
+          35px
+          23px
+          27px;
+
+        border-radius:
+          17px;
+      }
+
+      h1 {
+        font-size:
+          32px;
+      }
+
+      .button-group {
+        flex-direction:
+          column;
+      }
+
+      button {
+        width:
+          100%;
+      }
+    }
+  </style>
+
+</head>
+
+
+<body>
+
+  <main class="container">
+
+    <section class="card">
+
+      <div class="university">
+        日本大学 文理学部
+      </div>
+
+
+      <header class="brand">
+
+        <div
+          class="brand-icon"
+          aria-hidden="true"
+        >
+          🎙
+        </div>
+
+        <h1>
+          VoiceDock
+        </h1>
+
+        <div class="tagline">
+          RECORD · SAVE · REFLECT
+        </div>
+
+      </header>
+
+
+      <div class="input-group">
+
+        <label for="groupSelect">
+          グループ
+        </label>
+
+        <select id="groupSelect">
+
+          <option value="">
+            -- 選択してください --
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label for="nicknameInput">
+          お名前
+        </label>
+
+        <input
+          type="text"
+          id="nicknameInput"
+          placeholder="例：野中"
+          autocomplete="name"
+        >
+
+      </div>
+
+
+      <div class="button-group">
+
+        <button id="recordButton">
+          🎙 録音開始
+        </button>
+
+        <button
+          id="stopButton"
+          disabled
+        >
+          ■ 停止
+        </button>
+
+      </div>
+
+
+      <div
+        id="timer"
+        class="timer"
+      >
+        00:00
+      </div>
+
+
+      <button
+        id="saveButton"
+        disabled
+      >
+        💾 録音を保存する
+      </button>
+
+
+      <div id="status">
+        マイクの使用を許可してから録音を始めてください。
+      </div>
+
+
+      <audio
+        id="audioPlayback"
+        controls
+        hidden
+      ></audio>
+
+
+      <div class="guide">
+
+        <strong>使い方</strong><br>
+
+        ① グループと名前を入力<br>
+        ② 「録音開始」を押す<br>
+        ③ 終わったら「停止」<br>
+        ④ 音声を確認して「録音を保存する」
+
+      </div>
+
+
+      <footer>
+
+        <strong>VoiceDock</strong><br>
+
+        Nihon University<br>
+
+        College of Humanities and Sciences
+
+      </footer>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    // =====================================================
+    // VoiceDock 日本大学文理学部版
+    // GAS WebアプリURL
+    // =====================================================
+
+    const GAS_API_URL =
+      "https://script.google.com/a/macros/nihon-u.ac.jp/s/AKfycbys9pKSHqcbZ4SAx8wU99cl7QvzXL23PPx1zHdHMPLQZUTB4E-JJcpxJQVZ0qpNaKiXCg/exec";
+
+
+    // =====================================================
+    // 要素取得
+    // =====================================================
+
+    const recordButton =
+      document.getElementById("recordButton");
+
+    const stopButton =
+      document.getElementById("stopButton");
+
+    const saveButton =
+      document.getElementById("saveButton");
+
+    const statusDisplay =
+      document.getElementById("status");
+
+    const audioPlayback =
+      document.getElementById("audioPlayback");
+
+    const groupSelect =
+      document.getElementById("groupSelect");
+
+    const nicknameInput =
+      document.getElementById("nicknameInput");
+
+    const timerDisplay =
+      document.getElementById("timer");
+
+
+    // =====================================================
+    // グループ 1～50 を生成
+    // =====================================================
+
+    for (
+      let i = 1;
+      i <= 50;
+      i++
+    ) {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        String(i);
+
+      option.textContent =
+        "グループ " + i;
+
+      groupSelect.appendChild(
+        option
+      );
+
+    }
+
+
+    // =====================================================
+    // 録音用変数
+    // =====================================================
+
+    let mediaRecorder = null;
+
+    let audioChunks = [];
+
+    let originalAudioBlob = null;
+
+    let stream = null;
+
+    let timerInterval = null;
+
+    let recordingStartTime = null;
+
+    let currentAudioUrl = null;
+
+
+    // =====================================================
+    // ステータス表示
+    // =====================================================
+
+    function setStatus(
+      message,
+      type = ""
+    ) {
+
+      statusDisplay.textContent =
+        message;
+
+      statusDisplay.className =
+        type;
+
+    }
+
+
+    // =====================================================
+    // タイマー
+    // =====================================================
+
+    function startTimer() {
+
+      recordingStartTime =
+        Date.now();
+
+      timerDisplay.classList.add(
+        "active"
+      );
+
+      timerDisplay.textContent =
+        "00:00";
+
+
+      timerInterval =
+        setInterval(() => {
+
+          const elapsed =
+            Math.floor(
+              (
+                Date.now() -
+                recordingStartTime
+              ) / 1000
+            );
+
+
+          const minutes =
+            Math.floor(
+              elapsed / 60
+            );
+
+
+          const seconds =
+            elapsed % 60;
+
+
+          timerDisplay.textContent =
+            String(minutes)
+              .padStart(2, "0")
+            +
+            ":"
+            +
+            String(seconds)
+              .padStart(2, "0");
+
+        }, 500);
+
+    }
+
+
+    function stopTimer() {
+
+      if (timerInterval) {
+
+        clearInterval(
+          timerInterval
+        );
+
+        timerInterval =
+          null;
+
+      }
+
+    }
+
+
+    // =====================================================
+    // 録音開始
+    // =====================================================
+
+    recordButton.onclick =
+      async () => {
+
+        const groupValue =
+          groupSelect.value.trim();
+
+        const nicknameValue =
+          nicknameInput.value.trim();
+
+
+        if (!groupValue) {
+
+          setStatus(
+            "グループを選択してください。",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (!nicknameValue) {
+
+          setStatus(
+            "お名前を入力してください。",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        try {
+
+          stream =
+            await navigator
+              .mediaDevices
+              .getUserMedia({
+                audio: true
+              });
+
+
+          const options = {
+
+            mimeType:
+              "audio/webm;codecs=opus"
+
+          };
+
+
+          if (
+            !MediaRecorder
+              .isTypeSupported(
+                options.mimeType
+              )
+          ) {
+
+            delete options.mimeType;
+
+          }
+
+
+          mediaRecorder =
+            new MediaRecorder(
+              stream,
+              options
+            );
+
+
+          audioChunks =
+            [];
+
+
+          originalAudioBlob =
+            null;
+
+
+          saveButton.disabled =
+            true;
+
+
+          if (currentAudioUrl) {
+
+            URL.revokeObjectURL(
+              currentAudioUrl
+            );
+
+            currentAudioUrl =
+              null;
+
+          }
+
+
+          audioPlayback.hidden =
+            true;
+
+          audioPlayback.src =
+            "";
+
+
+          mediaRecorder
+            .ondataavailable =
+              event => {
+
+                if (
+                  event.data &&
+                  event.data.size > 0
+                ) {
+
+                  audioChunks.push(
+                    event.data
+                  );
+
+                }
+
+              };
+
+
+          mediaRecorder.onstop =
+            () => {
+
+              originalAudioBlob =
+                new Blob(
+                  audioChunks,
+                  {
+                    type:
+                      mediaRecorder.mimeType
+                  }
+                );
+
+
+              currentAudioUrl =
+                URL.createObjectURL(
+                  originalAudioBlob
+                );
+
+
+              audioPlayback.src =
+                currentAudioUrl;
+
+
+              audioPlayback.hidden =
+                false;
+
+
+              saveButton.disabled =
+                false;
+
+
+              recordButton.disabled =
+                false;
+
+
+              stopButton.disabled =
+                true;
+
+
+              groupSelect.disabled =
+                false;
+
+
+              nicknameInput.disabled =
+                false;
+
+
+              setStatus(
+                "録音が終了しました。音声を確認して保存してください。",
+                "success"
+              );
+
+
+              audioChunks =
+                [];
+
+            };
+
+
+          mediaRecorder.start();
+
+
+          startTimer();
+
+
+          setStatus(
+            "録音中です。お話しください。",
+            "recording"
+          );
+
+
+          recordButton.disabled =
+            true;
+
+
+          stopButton.disabled =
+            false;
+
+
+          saveButton.disabled =
+            true;
+
+
+          groupSelect.disabled =
+            true;
+
+
+          nicknameInput.disabled =
+            true;
+
+        }
+
+
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+
+          setStatus(
+            "マイクを使用できません。ブラウザのマイク設定を確認してください。",
+            "error"
+          );
+
+        }
+
+      };
+
+
+    // =====================================================
+    // 録音停止
+    // =====================================================
+
+    stopButton.onclick =
+      () => {
+
+        if (
+          mediaRecorder &&
+          mediaRecorder.state !==
+            "inactive"
+        ) {
+
+          mediaRecorder.stop();
+
+        }
+
+
+        stopTimer();
+
+
+        if (stream) {
+
+          stream
+            .getTracks()
+            .forEach(
+              track =>
+                track.stop()
+            );
+
+
+          stream =
+            null;
+
+        }
+
+      };
+
+
+    // =====================================================
+    // 保存
+    // =====================================================
+
+    saveButton.onclick =
+      async () => {
+
+        if (!originalAudioBlob) {
+
+          return;
+
+        }
+
+
+        const groupValue =
+          groupSelect
+            .value
+            .trim();
+
+
+        const nicknameValue =
+          nicknameInput
+            .value
+            .trim();
+
+
+        setStatus(
+          "MP3形式に変換しています…"
+        );
+
+
+        saveButton.disabled =
+          true;
+
+
+        recordButton.disabled =
+          true;
+
+
+        groupSelect.disabled =
+          true;
+
+
+        nicknameInput.disabled =
+          true;
+
+
+        try {
+
+          const mp3Blob =
+            await encodeToMp3(
+              originalAudioBlob
+            );
+
+
+          const reader =
+            new FileReader();
+
+
+          reader.onloadend =
+            () => {
+
+              const audioDataUrl =
+                reader.result;
+
+
+              const timestamp =
+                new Date()
+                  .toISOString()
+                  .replace(
+                    /[:.]/g,
+                    "-"
+                  );
+
+
+              const safeNickname =
+                nicknameValue
+                  .replace(
+                    /[\s\\\/:*?"<>|]/g,
+                    "_"
+                  );
+
+
+              const baseFileName =
+                "グループ"
+                +
+                groupValue
+                +
+                "_"
+                +
+                safeNickname
+                +
+                "_"
+                +
+                timestamp;
+
+
+              setStatus(
+                "Google Driveへ保存しています…"
+              );
+
+
+              fetch(
+                GAS_API_URL,
+                {
+
+                  method:
+                    "POST",
+
+                  redirect:
+                    "follow",
+
+                  headers: {
+
+                    "Content-Type":
+                      "text/plain;charset=utf-8"
+
+                  },
+
+                  body:
+                    JSON.stringify({
+
+                      audioData:
+                        audioDataUrl,
+
+                      fileName:
+                        baseFileName
+
+                    })
+
+                }
+              )
+
+
+              .then(
+                response => {
+
+                  if (
+                    !response.ok
+                  ) {
+
+                    throw new Error(
+                      "HTTP "
+                      +
+                      response.status
+                    );
+
+                  }
+
+                  return response.json();
+
+                }
+              )
+
+
+              .then(
+                data => {
+
+                  if (
+                    data.success
+                  ) {
+
+                    setStatus(
+                      "保存しました。"
+                      +
+                      " "
+                      +
+                      data.message,
+                      "success"
+                    );
+
+
+                    saveButton.disabled =
+                      true;
+
+                  }
+
+
+                  else {
+
+                    setStatus(
+                      "保存できませんでした："
+                      +
+                      data.message,
+                      "error"
+                    );
+
+
+                    saveButton.disabled =
+                      false;
+
+                  }
+
+
+                  recordButton.disabled =
+                    false;
+
+
+                  groupSelect.disabled =
+                    false;
+
+
+                  nicknameInput.disabled =
+                    false;
+
+                }
+              )
+
+
+              .catch(
+                error => {
+
+                  console.error(
+                    error
+                  );
+
+
+                  setStatus(
+                    "通信エラーが発生しました。"
+                    +
+                    "日本大学のGoogleアカウントにログインしていることを確認してください。"
+                    +
+                    "（"
+                    +
+                    error.message
+                    +
+                    "）",
+                    "error"
+                  );
+
+
+                  saveButton.disabled =
+                    false;
+
+
+                  recordButton.disabled =
+                    false;
+
+
+                  groupSelect.disabled =
+                    false;
+
+
+                  nicknameInput.disabled =
+                    false;
+
+                }
+              );
+
+            };
+
+
+          reader.readAsDataURL(
+            mp3Blob
+          );
+
+        }
+
+
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+
+          setStatus(
+            "MP3への変換中にエラーが発生しました："
+            +
+            error.message,
+            "error"
+          );
+
+
+          saveButton.disabled =
+            false;
+
+
+          recordButton.disabled =
+            false;
+
+
+          groupSelect.disabled =
+            false;
+
+
+          nicknameInput.disabled =
+            false;
+
+        }
+
+      };
+
+
+    // =====================================================
+    // MP3変換
+    // =====================================================
+
+    async function encodeToMp3(
+      audioBlob
+    ) {
+
+      const AudioContextClass =
+        window.AudioContext ||
+        window.webkitAudioContext;
+
+
+      const audioContext =
+        new AudioContextClass();
+
+
+      try {
+
+        const arrayBuffer =
+          await audioBlob
+            .arrayBuffer();
+
+
+        const audioBuffer =
+          await audioContext
+            .decodeAudioData(
+              arrayBuffer
+            );
+
+
+        const numChannels =
+          audioBuffer
+            .numberOfChannels;
+
+
+        const sampleRate =
+          audioBuffer
+            .sampleRate;
+
+
+        const mp3encoder =
+          new lamejs.Mp3Encoder(
+            numChannels,
+            sampleRate,
+            128
+          );
+
+
+        const mp3Data =
+          [];
+
+
+        const left =
+          audioBuffer
+            .getChannelData(0);
+
+
+        const right =
+          numChannels > 1
+            ?
+            audioBuffer
+              .getChannelData(1)
+            :
+            null;
+
+
+        function floatToInt16(
+          floatSamples
+        ) {
+
+          const intSamples =
+            new Int16Array(
+              floatSamples.length
+            );
+
+
+          for (
+            let i = 0;
+            i < floatSamples.length;
+            i++
+          ) {
+
+            const s =
+              Math.max(
+                -1,
+                Math.min(
+                  1,
+                  floatSamples[i]
+                )
+              );
+
+
+            intSamples[i] =
+              s < 0
+                ?
+                s * 0x8000
+                :
+                s * 0x7FFF;
+
+          }
+
+
+          return intSamples;
+
+        }
+
+
+        const samplesLeft =
+          floatToInt16(
+            left
+          );
+
+
+        const samplesRight =
+          right
+            ?
+            floatToInt16(
+              right
+            )
+            :
+            null;
+
+
+        const sampleBlockSize =
+          1152;
+
+
+        if (
+          numChannels === 2
+        ) {
+
+          for (
+            let i = 0;
+            i < samplesLeft.length;
+            i += sampleBlockSize
+          ) {
+
+            const leftChunk =
+              samplesLeft
+                .subarray(
+                  i,
+                  i + sampleBlockSize
+                );
+
+
+            const rightChunk =
+              samplesRight
+                .subarray(
+                  i,
+                  i + sampleBlockSize
+                );
+
+
+            const mp3buf =
+              mp3encoder
+                .encodeBuffer(
+                  leftChunk,
+                  rightChunk
+                );
+
+
+            if (
+              mp3buf.length > 0
+            ) {
+
+              mp3Data.push(
+                new Uint8Array(
+                  mp3buf
+                )
+              );
+
+            }
+
+          }
+
+        }
+
+
+        else {
+
+          for (
+            let i = 0;
+            i < samplesLeft.length;
+            i += sampleBlockSize
+          ) {
+
+            const leftChunk =
+              samplesLeft
+                .subarray(
+                  i,
+                  i + sampleBlockSize
+                );
+
+
+            const mp3buf =
+              mp3encoder
+                .encodeBuffer(
+                  leftChunk
+                );
+
+
+            if (
+              mp3buf.length > 0
+            ) {
+
+              mp3Data.push(
+                new Uint8Array(
+                  mp3buf
+                )
+              );
+
+            }
+
+          }
+
+        }
+
+
+        const flush =
+          mp3encoder.flush();
+
+
+        if (
+          flush.length > 0
+        ) {
+
+          mp3Data.push(
+            new Uint8Array(
+              flush
+            )
+          );
+
+        }
+
+
+        return new Blob(
+          mp3Data,
+          {
+            type:
+              "audio/mpeg"
+          }
+        );
+
+      }
+
+
+      finally {
+
+        await audioContext.close();
+
+      }
+
+    }
+
+  </script>
+
+</body>
+
+</html>
